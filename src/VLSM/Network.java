@@ -132,10 +132,30 @@ public class Network {
                     }else{
                         firsIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt((int)(byte3 + 1));
                     }
-                    IPBrodcast[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt((int)((int)byte2 + (int)Math.pow(2, 32 - (int)arrMask[i] - 8)) - 1) + "." + threeIt(255);
-                    lastIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt((int)((int)byte2 + (int)Math.pow(2, 32 - (int)arrMask[i] - 8)) - 1) + "." + threeIt(224);
+                    if(byte3 + 255 > 255){
+                        byte3 += 255;
+                        byte3 -= 256;
+                        byte2 += 1;
+                        IPBrodcast[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt((int)((int)byte2 + (int)Math.pow(2, 32 - (int)arrMask[i] - 8)) - 1) + "." + threeIt(byte3);
+                        byte3 -= 255;
+                        byte3 += 256;
+                        byte2 -= 1;
+                    }else{
+                        IPBrodcast[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt((int)((int)byte2 + (int)Math.pow(2, 32 - (int)arrMask[i] - 8)) - 1) + "." + threeIt(byte3+ 255);
+                    }
+                    if(byte3 + 254 > 255){
+                        byte3 += 254;
+                        byte3 -= 256;
+                        byte2 += 1;
+                        lastIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt((int)((int)byte2 + (int)Math.pow(2, 32 - (int)arrMask[i] - 8)) - 1) + "." + threeIt(byte3);
+                        byte3 -= 254;
+                        byte3 += 256;
+                        byte2 -= 1;
+                    }else{
+                        lastIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt((int)((int)byte2 + (int)Math.pow(2, 32 - (int)arrMask[i] - 8)) - 1) + "." + threeIt(byte3+ 254);
+                    }
+
                     byte2 += Math.pow(2, 32 - arrMask[i] - 8);
-                    byte3 = 0;
                 }
             }
 
