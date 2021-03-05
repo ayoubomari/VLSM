@@ -72,13 +72,13 @@ public class Network {
                 arrHost[i] = scanner.nextInt();
 
                 allHost += arrHost[i] + 2;
-                if (allHost > defaultHost[mask - 16]) {
+                if (allHost > defaultHost[mask - 16] || arrHost[i] < 0) {
                     System.out.println("impossible!");
                     return;
                 }
             }
             for (int i = 0; i < arrHost.length; i++) {
-                arrMask[i] = getMaskB(arrHost[i]);
+                arrMask[i] = getMaskB(arrHost[i] );
             }
 
             String[] IPAdress = new String[subnet];
@@ -117,7 +117,7 @@ public class Network {
                         lastIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt((int)((int)byte3 + (int)Math.pow(2, 32 - (int)arrMask[i]) - 2));
                     }
                     byte3 += Math.pow(2, 32 - arrMask[i]);
-                    if(byte3 + Math.pow(2, 32 - arrMask[i]) > 255){
+                    if(byte3 > 255){
                         byte3 -= 256;
                         byte2 += 1;
                     }
@@ -166,7 +166,7 @@ public class Network {
                 arrHost[i] = scanner.nextInt();
 
                 allHost += arrHost[i] + 2;
-                if (allHost > defaultHost[mask - 24]) {
+                if (allHost > defaultHost[mask - 24] || arrHost[i] < 0) {
                     System.out.println("impossible!");
                     return;
                 }
@@ -240,7 +240,7 @@ public class Network {
     private static String threeIt(int n){
         String s = String.valueOf(n);
         for(;;){
-            if(s.length() == 3){
+            if(s.length() >= 3){
                 break;
             }
             s = "0" + s;
