@@ -12,8 +12,7 @@ public class Network {
         remplir();
     }
 
-    public static void remplir() {
-
+    public static void remplir() {//Network information
         System.out.println("\n\n\n");
         System.out.println("Press enter to return.");
         System.out.print("Enter your network adress like (192,168,10,0): ");
@@ -154,8 +153,12 @@ public class Network {
                     }else{
                         lastIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt((int)((int)byte2 + (int)Math.pow(2, 32 - (int)arrMask[i] - 8)) - 1) + "." + threeIt(byte3+ 254);
                     }
-
                     byte2 += Math.pow(2, 32 - arrMask[i] - 8);
+
+                    if(byte2 > 255){
+                        System.out.println("Impossible!");
+                        return;
+                    }
                 }
             }
 
