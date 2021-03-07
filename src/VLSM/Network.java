@@ -154,24 +154,11 @@ public class Network {
                         lastIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt((int)((int)byte2 + (int)Math.pow(2, 32 - (int)arrMask[i] - 8)) - 1) + "." + threeIt(byte3+ 254);
                     }
                     byte2 += Math.pow(2, 32 - arrMask[i] - 8);
-
-                    if(byte2 > 255){
-                        System.out.println("Impossible!");
-                        return;
-                    }
                 }
             }
 
-            //print final result
-            System.out.println("*--------------------------------------------------------------------------------------*");
-            System.out.println("| Name  | Mask |       @IP       |     First @     |     Last @      |    @Brodcast    |");
-            for (int i = 0; i < subnet; i++) {
-                System.out.println("|_______|______|_________________|_________________|_________________|_________________|");
-                System.out.println("|       |      |                 |                 |                 |                 |");
-                System.out.println("| " + fiveIT(i+1) + " | /" + arrMask[i] + "  | " + IPAdress[i] + " | " + firsIP[i] + " | " + lastIP[i] + " | " + IPBrodcast[i] + " |");
-                System.out.println("|       |      |                 |                 |                 |                 |");
-            }
-            System.out.println("|_______|______|_________________|_________________|_________________|_________________|");
+            //print final result================================================
+            displayTable(subnet, arrMask, IPAdress, firsIP, lastIP, IPBrodcast);
 
         } else {
             System.out.println("Incorect input!");
@@ -213,24 +200,10 @@ public class Network {
                 IPBrodcast[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt((int)((int)byte3 + (int)Math.pow(2, 32 - (int)arrMask[i]) - 1));
                 lastIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt((int)((int)byte3 + (int)Math.pow(2, 32 - (int)arrMask[i]) - 2));
                 byte3 += Math.pow(2, 32 - arrMask[i]);
-
-                if(byte3 > 255){
-                    System.out.println("Impossible!");
-                    return;
-                }
             }
 
-            //print final result
-            System.out.println("----------------------------------------------------------------------------------------");
-            System.out.println("| Name  | Mask |       @IP       |     First @     |     Last @      |    @Brodcast    |");
-            for (int i = 0; i < subnet; i++) {
-                System.out.println("|_______|______|_________________|_________________|_________________|_________________|");
-                System.out.println("|       |      |                 |                 |                 |                 |");
-                System.out.println("| " + fiveIT(i+1) + " | /" + arrMask[i] + "  | " + IPAdress[i] + " | " + firsIP[i] + " | " + lastIP[i] + " | " + IPBrodcast[i] + " |");
-                System.out.println("|       |      |                 |                 |                 |                 |");
-            }
-            System.out.println("|_______|______|_________________|_________________|_________________|_________________|");
-
+            //print final result================================================
+            displayTable(subnet, arrMask, IPAdress, firsIP, lastIP, IPBrodcast);
         } else {
             System.out.println("Incorect input!");
         }
@@ -267,6 +240,18 @@ public class Network {
             }
         }
         return defaultMask[i - 1];
+    }
+
+    private static void displayTable(int subnet, int[] arrMask, String[] IPAdress, String[] firsIP, String[] lastIP, String[] IPBrodcast){
+        System.out.println("*--------------------------------------------------------------------------------------*");
+        System.out.println("| Name  | Mask |       @IP       |     First @     |     Last @      |    @Brodcast    |");
+        for (int i = 0; i < subnet; i++) {
+            System.out.println("|_______|______|_________________|_________________|_________________|_________________|");
+            System.out.println("|       |      |                 |                 |                 |                 |");
+            System.out.println("| " + fiveIT(i+1) + " | /" + arrMask[i] + "  | " + IPAdress[i] + " | " + firsIP[i] + " | " + lastIP[i] + " | " + IPBrodcast[i] + " |");
+            System.out.println("|       |      |                 |                 |                 |                 |");
+        }
+        System.out.println("|_______|______|_________________|_________________|_________________|_________________|");
     }
 
     private static String threeIt(int n){
