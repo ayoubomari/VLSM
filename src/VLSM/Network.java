@@ -92,8 +92,10 @@ public class Network {
                         byte3 = byte3 + 1;
                         byte3 -= 256;
                         byte2 += 1;
-                        firsIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt((int)(byte3 + 1));if(byte2 > 255){ System.out.println("Impossible!"); return;}
+                        firsIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt((int)(byte3));if(byte2 > 255){ System.out.println("Impossible!"); return;}
                         byte3 = byte3 - 1;
+                        byte3 += 256;
+                        byte2 -= 1;
                     }else{
                         firsIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt((int)(byte3 + 1));if(byte2 > 255){ System.out.println("Impossible!"); return;}
                     }
@@ -127,7 +129,13 @@ public class Network {
                 }else{// less then /24.
                     IPAdress[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);if(byte2 > 255){ System.out.println("Impossible!"); return;}
                     if(byte3 + 1 > 255){
-                        firsIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt((int)((byte3 - 256) + 1));if(byte2 > 255){ System.out.println("Impossible!"); return;}
+                        byte3 += 1;
+                        byte3 -= 256;
+                        byte2 += 1;
+                        firsIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);if(byte2 > 255){ System.out.println("Impossible!"); return;}
+                        byte3 -= 1;
+                        byte3 += 256;
+                        byte2 -= 1;
                     }else{
                         firsIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt((int)(byte3 + 1));if(byte2 > 255){ System.out.println("Impossible!"); return;}
                     }
