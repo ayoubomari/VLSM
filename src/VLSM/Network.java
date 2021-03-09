@@ -29,15 +29,21 @@ public class Network {
                 int byte3 = Integer.parseInt(bytes[3]);
 
 
-                if (byte0 >= 128 && byte0 < 224 && byte1 >= 0 && byte1 <= 255 && byte2 >= 0 && byte2 <= 255 && byte3 >= 0 && byte3 <= 255) {
-                    if (byte0 >= 128 && byte0 < 192) {
+                if (byte0 >= 0 && byte0 < 224 && byte1 >= 0 && byte1 <= 255 && byte2 >= 0 && byte2 <= 255 && byte3 >= 0 && byte3 <= 255) {
+                    if(byte0 >= 0 && byte0 < 128){
+                        cls = "a";
+                    }
+                    else if (byte0 >= 128 && byte0 < 192) {
                         cls = "b";
                     } else {
                         cls = "c";
                     }
                     System.out.print("Enter the subnet mask: ");
                     mask = scanner.nextInt();
-                    if (cls == "b" && mask >= 16 && mask <= 32) {
+                    if(cls == "a" && mask >= 8 && mask <= 32){
+                        subnetA(byte0, byte1, byte2, byte3, mask);
+                    }
+                    else if (cls == "b" && mask >= 16 && mask <= 32) {
                         subnetB(byte0, byte1, byte2, byte3, mask);
                     } else if (cls == "c" && mask >= 24 && mask <= 32) {
                         subnetC(byte0, byte1, byte2, byte3, mask);
@@ -56,6 +62,286 @@ public class Network {
     }
 
 
+    private static void subnetA(int byte0, int byte1, int byte2, int byte3, int mask) {
+        int[] defaultHost = {16777216, 8388608, 4194304, 2097152, 1048576, 524288, 262144, 131072, 65536, 32768, 16384, 8192, 4096, 2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1};
+
+        int subnet;
+        int allHost = 0;
+        System.out.print("Enter the number of subnets: ");
+        subnet = scanner.nextInt();
+        if (subnet >= 1 && subnet <= 16777216) {
+            int[] arrMask = new int[subnet];
+            int[] arrHost = new int[subnet];
+            for (int i = 0; i < subnet; i++) { //enter hosts list
+                System.out.print("Subnet n°" + (int)((int)i+1) + " => Enter the number of hosts: ");
+                arrHost[i] = scanner.nextInt();
+
+                allHost += arrHost[i] + 2;
+                if (allHost > defaultHost[mask - 8] || arrHost[i] < 0) {
+                    System.out.println("impossible!");
+                    return;
+                }
+            }
+            for (int i = 0; i < arrHost.length; i++) {
+                arrMask[i] = getMaskA(arrHost[i]);
+            }
+
+            String[] IPAdress = new String[subnet];
+            String[] firsIP = new String[subnet];
+            String[] lastIP = new String[subnet];
+            String[] IPBrodcast = new String[subnet];
+
+            for (int i = 0; i < subnet; i++) {
+                if(arrMask[i] >= 24){// 24 <= x
+                    IPAdress[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);      if (byte1 > 255){ System.out.println("Impossible!");return; }
+                    if(byte3 + 1 > 255){
+                        byte3 = byte3 + 1;
+                        byte3 -= 256;
+                        byte2 += 1;
+                        if(byte2 > 255){
+                            byte2 -= 256;
+                            byte1 += 1;
+                            firsIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);        if (byte1 > 255){ System.out.println("Impossible!");return; }
+                            byte2 += 256;
+                            byte1 -= 1;
+                        }else{
+                            firsIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);        if (byte1 > 255){ System.out.println("Impossible!");return; }
+                        }
+                        byte3 = byte3 - 1;
+                        byte3 += 256;
+                        byte2 -= 1;
+                    }else{
+                        firsIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt((int)(byte3 + 1));     if (byte1 > 255){ System.out.println("Impossible!");return; }
+                    }
+                    if(((int)byte3 + Math.pow(2, 32 - arrMask[i]) - 1) > 255){
+                        byte3 += Math.pow(2, 32 - (int)arrMask[i]) - 1;
+                        byte3 -= 256;
+                        byte2 += 1;
+                        if(byte2 > 255){
+                            byte2 -= 256;
+                            byte1 += 1;
+                            IPBrodcast[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);        if (byte1 > 255){ System.out.println("Impossible!");return; }
+                            byte2 += 256;
+                            byte1 -= 1;
+                        }else{
+                            IPBrodcast[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);        if (byte1 > 255){ System.out.println("Impossible!");return; }
+                        }
+                        byte3 -= Math.pow(2, 32 - (int)arrMask[i]) - 1;
+                        byte3 += 256;
+                        byte2 -= 1;
+                    }else{
+                        IPBrodcast[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(((int)byte3 + (int)Math.pow(2, 32 - arrMask[i]) - 1));     if (byte1 > 255){ System.out.println("Impossible!");return; }
+                    }
+                    if(((int)byte3 + Math.pow(2, 32 - arrMask[i]) - 2) > 255){
+                        byte3 += Math.pow(2, 32 - (int)arrMask[i]) - 2;
+                        byte3 -= 256;
+                        byte2 += 1;
+                        if(byte2 > 255){
+                            byte2 -= 256;
+                            byte1 += 1;
+                            lastIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);        if (byte1 > 255){ System.out.println("Impossible!");return; }
+                            byte2 += 256;
+                            byte1 -= 1;
+                        }else{
+                            lastIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);        if (byte1 > 255){ System.out.println("Impossible!");return; }
+                        }
+                        byte3 -= Math.pow(2, 32 - (int)arrMask[i]) - 2;
+                        byte3 += 256;
+                        byte2 -= 1;
+                    }else{
+                        lastIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(((int)byte3 + (int)Math.pow(2, 32 - arrMask[i]) - 2));     if (byte1 > 255){ System.out.println("Impossible!");return; }
+                    }
+                    byte3 += Math.pow(2, 32 - arrMask[i]);
+                    if(byte3 > 255){
+                        byte3 -= 256;
+                        byte2 += 1;
+                        if(byte2 > 255){
+                            byte2 -= 256;
+                            byte1 += 1;
+                        }
+                    }
+
+
+
+                }else if (arrMask[i] >= 16){// 16 <= x < 24.
+                    IPAdress[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);      if (byte1 > 255){ System.out.println("Impossible!");return; }
+                    if(byte3 + 1 > 255){
+                        byte3 += 1;
+                        byte3 -= 256;
+                        byte2 += 1;
+                        if(byte2 > 255){
+                            byte2 -= 256;
+                            byte1 += 1;
+                            firsIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);    if (byte1 > 255){ System.out.println("Impossible!");return; }
+                            byte2 += 256;
+                            byte1 -= 1;
+                        }else{
+                            firsIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);    if (byte1 > 255){ System.out.println("Impossible!");return; }
+                        }
+                        byte3 -= 1;
+                        byte3 += 256;
+                        byte2 -= 1;
+                    }else{
+                        firsIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt((int)(byte3 + 1));     if (byte1 > 255){ System.out.println("Impossible!");return; }
+                    }
+                    byte2 = (int)((int)byte2 + (int)Math.pow(2, 32 - (int)arrMask[i] - 8)) - 1;
+                    byte3 += 255;
+                    if(byte3 > 255){
+                        byte3 -= 256;
+                        byte2 += 1;
+                        if(byte2 > 255){
+                            byte2 -= 256;
+                            byte1 += 1;
+                            IPBrodcast[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);   if (byte1 > 255 && byte2 > 255){ System.out.println("Impossible!");return; }
+                            byte2 += 256;
+                            byte1 -= 1;
+                        }else{
+                            IPBrodcast[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);   if (byte1 > 255 && byte2 > 255){ System.out.println("Impossible!");return; }
+                        }
+                        byte3 += 256;
+                        byte2 -= 1;
+                    }else {
+                        if(byte2 > 255){
+                            byte2 -= 256;
+                            byte1 += 1;
+                            IPBrodcast[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);   if (byte1 > 255 && byte2 > 255){ System.out.println("Impossible!");return; }
+                            byte2 += 256;
+                            byte1 -= 1;
+                        }else{
+                            IPBrodcast[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);   if (byte1 > 255 && byte2 > 255){ System.out.println("Impossible!");return; }
+                        }
+                    }
+
+                    byte3 -= 255;
+
+
+                    byte3 += 254;
+                    if(byte3 > 255){
+                        byte3 -= 256;
+                        byte2 += 1;
+                        if(byte2 > 255){
+                            byte2 -= 256;
+                            byte1 += 1;
+                            lastIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);   if (byte1 > 255 && byte2 > 255){ System.out.println("Impossible!");return; }
+                            byte2 += 256;
+                            byte1 -= 1;
+                        }else{
+                            lastIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);   if (byte1 > 255 && byte2 > 255){ System.out.println("Impossible!");return; }
+                        }
+                        byte3 += 256;
+                        byte2 -= 1;
+                    }else {
+                        if(byte2 > 255){
+                            byte2 -= 256;
+                            byte1 += 1;
+                            lastIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);   if (byte1 > 255 && byte2 > 255){ System.out.println("Impossible!");return; }
+                            byte2 += 256;
+                            byte1 -= 1;
+                        }else{
+                            lastIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);   if (byte1 > 255 && byte2 > 255){ System.out.println("Impossible!");return; }
+                        }
+                    }
+                    byte2 = byte2 - (int)(Math.pow(2, 32 - (int)arrMask[i] - 8) - 1);
+                    byte3 -= 254;
+
+
+                    byte2 += Math.pow(2, 32 - arrMask[i] - 8);
+                    if(byte2 > 255){
+                        byte2 -= 256;
+                        byte1 += 1;
+                    }
+
+
+                }else{// 8 <= x
+                    IPAdress[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);if(byte1 > 255){ System.out.println("Impossible!"); return;}
+                    if(byte3 + 1 > 255){
+                        byte3 += 1;
+                        byte3 -= 256;
+                        byte2 += 1;
+                        firsIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);if(byte1 > 255){ System.out.println("Impossible!"); return;}
+                        byte3 -= 1;
+                        byte3 += 256;
+                        byte2 -= 1;
+                    }else{
+                        firsIP[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3 + 1);if(byte1 > 255){ System.out.println("Impossible!"); return;}
+                    }
+
+                    byte3 += 255;
+                    byte2 += 255;
+                    if(byte3 > 255){
+                        byte3 -= 256;
+                        byte2 += 1;
+                        if(byte2 > 255){
+                            byte2 -= 256;
+                            byte1 += 1;
+                            IPBrodcast[i] = threeIt(byte0) + "." + threeIt((int)((int)byte1 + (int)Math.pow(2, 32 - (int)arrMask[i] - 16)) - 1) + "." + threeIt(byte2) + "." + threeIt(byte3);if((int)((int)byte1 + (int)Math.pow(2, 32 - (int)arrMask[i] - 16)) - 1 > 255){ System.out.println("Impossible!"); return;}
+                            byte2 += 256;
+                            byte1 -= 1;
+                        }else{
+                            IPBrodcast[i] = threeIt(byte0) + "." + threeIt((int)((int)byte1 + (int)Math.pow(2, 32 - (int)arrMask[i] - 16)) - 1) + "." + threeIt(byte2) + "." + threeIt(byte3);if((int)((int)byte1 + (int)Math.pow(2, 32 - (int)arrMask[i] - 16)) - 1 > 255){ System.out.println("Impossible!"); return;}
+                        }
+                        byte3 += 256;
+                        byte2 -= 1;
+                    }else{
+                        if(byte2 > 255){
+                            byte2 -= 256;
+                            byte1 += 1;
+                            IPBrodcast[i] = threeIt(byte0) + "." + threeIt((int)((int)byte1 + (int)Math.pow(2, 32 - (int)arrMask[i] - 16)) - 1) + "." + threeIt(byte2) + "." + threeIt(byte3);if((int)((int)byte1 + (int)Math.pow(2, 32 - (int)arrMask[i] - 16)) - 1 > 255){ System.out.println("Impossible!"); return;}
+                            byte2 += 256;
+                            byte1 -= 1;
+                        }else{
+                            IPBrodcast[i] = threeIt(byte0) + "." + threeIt((int)((int)byte1 + (int)Math.pow(2, 32 - (int)arrMask[i] - 16)) - 1) + "." + threeIt(byte2) + "." + threeIt(byte3);if((int)((int)byte1 + (int)Math.pow(2, 32 - (int)arrMask[i] - 16)) - 1 > 255){ System.out.println("Impossible!"); return;}
+                        }
+                    }
+                    byte3 -= 255;
+                    byte2 -= 255;
+                    //----------
+                    byte3 += 254;
+                    byte2 += 255;
+                    if(byte3 > 255){
+                        byte3 -= 256;
+                        byte2 += 1;
+                        if(byte2 > 255){
+                            byte2 -= 256;
+                            byte1 += 1;
+                            lastIP[i] = threeIt(byte0) + "." + threeIt((int)((int)byte1 + (int)Math.pow(2, 32 - (int)arrMask[i] - 16)) - 1) + "." + threeIt(byte2) + "." + threeIt(byte3);if((int)((int)byte1 + (int)Math.pow(2, 32 - (int)arrMask[i] - 16)) - 1 > 255){ System.out.println("Impossible!"); return;}
+                            byte2 += 256;
+                            byte1 -= 1;
+                        }else{
+                            lastIP[i] = threeIt(byte0) + "." + threeIt((int)((int)byte1 + (int)Math.pow(2, 32 - (int)arrMask[i] - 16)) - 1) + "." + threeIt(byte2) + "." + threeIt(byte3);if((int)((int)byte1 + (int)Math.pow(2, 32 - (int)arrMask[i] - 16)) - 1 > 255){ System.out.println("Impossible!"); return;}
+                        }
+                        byte3 += 256;
+                        byte2 -= 1;
+                    }else {
+                        if(byte2 > 255){
+                            byte2 -= 256;
+                            byte1 += 1;
+                            lastIP[i] = threeIt(byte0) + "." + threeIt((int)((int)byte1 + (int)Math.pow(2, 32 - (int)arrMask[i] - 16)) - 1) + "." + threeIt(byte2) + "." + threeIt(byte3);if((int)((int)byte1 + (int)Math.pow(2, 32 - (int)arrMask[i] - 16)) - 1 > 255){ System.out.println("Impossible!"); return;}
+                            byte2 += 256;
+                            byte1 -= 1;
+                        }else{
+                            lastIP[i] = threeIt(byte0) + "." + threeIt((int)((int)byte1 + (int)Math.pow(2, 32 - (int)arrMask[i] - 16)) - 1) + "." + threeIt(byte2) + "." + threeIt(byte3);if((int)((int)byte1 + (int)Math.pow(2, 32 - (int)arrMask[i] - 16)) - 1 > 255){ System.out.println("Impossible!"); return;}
+                        }
+                    }
+                    byte3 -= 254;
+                    byte2 -= 255;
+
+
+                    byte1 += Math.pow(2, 32 - arrMask[i] - 16);
+
+                }
+            }
+
+
+            //print final result================================================
+            displayTable(subnet, arrMask, IPAdress, firsIP, lastIP, IPBrodcast);
+        }else{
+            System.out.println("Incorect input!");
+        }
+    }
+
+
+
     private static void subnetB(int byte0, int byte1, int byte2, int byte3, int mask) {
         int[] defaultHost = {65536, 32768, 16384, 8192, 4096, 2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1};
 
@@ -67,7 +353,7 @@ public class Network {
             int[] arrMask = new int[subnet];
             int[] arrHost = new int[subnet];
             for (int i = 0; i < subnet; i++) { //enter hosts list
-                System.out.print("Subnet n°" + i + " => Enter the number of hosts: ");
+                System.out.print("Subnet n°" + (int)((int)i+1) + " => Enter the number of hosts: ");
                 arrHost[i] = scanner.nextInt();
 
                 allHost += arrHost[i] + 2;
@@ -81,9 +367,9 @@ public class Network {
             }
 
             String[] IPAdress = new String[subnet];
-            String[] firsIP = new String[subnet];;
-            String[] lastIP = new String[subnet];;
-            String[] IPBrodcast = new String[subnet];;
+            String[] firsIP = new String[subnet];
+            String[] lastIP = new String[subnet];
+            String[] IPBrodcast = new String[subnet];
 
             for (int i = 0; i < subnet; i++) {
                 if(arrMask[i] >= 24){
@@ -184,7 +470,7 @@ public class Network {
             int[] arrMask = new int[subnet];
             int[] arrHost = new int[subnet];
             for (int i = 0; i < subnet; i++) { //enter hosts list
-                System.out.print("Subnet n°" + i + " => Enter the number of hosts: ");
+                System.out.print("Subnet n°" + (int)((int)i+1) + " => Enter the number of hosts: ");
                 arrHost[i] = scanner.nextInt();
 
                 allHost += arrHost[i] + 2;
@@ -198,9 +484,9 @@ public class Network {
             }
 
             String[] IPAdress = new String[subnet];
-            String[] firsIP = new String[subnet];;
-            String[] lastIP = new String[subnet];;
-            String[] IPBrodcast = new String[subnet];;
+            String[] firsIP = new String[subnet];
+            String[] lastIP = new String[subnet];
+            String[] IPBrodcast = new String[subnet];
 
             for (int i = 0; i < subnet; i++) {
                 IPAdress[i] = threeIt(byte0) + "." + threeIt(byte1) + "." + threeIt(byte2) + "." + threeIt(byte3);if(byte3 > 255){ System.out.println("Impossible!"); return;}
@@ -219,7 +505,19 @@ public class Network {
 
 
 
+    private static int getMaskA(int hostNumber) {
+        int[] defaultHost = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304, 8388608, 16777216};
+        int[] defaultMask = {32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8};
 
+        int n = hostNumber + 2;
+        int i = 0;
+        for (; i < defaultHost.length; i++) {
+            if (n <= defaultHost[i]) {
+                return defaultMask[i];
+            }
+        }
+        return defaultMask[i - 1];
+    }
 
     private static int getMaskB(int hostNumber) {
         int[] defaultHost = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536};
@@ -256,7 +554,11 @@ public class Network {
         for (int i = 0; i < subnet; i++) {
             System.out.println("|_______|______|_________________|_________________|_________________|_________________|");
             System.out.println("|       |      |                 |                 |                 |                 |");
-            System.out.println("| " + fiveIT(i+1) + " | /" + arrMask[i] + "  | " + IPAdress[i] + " | " + firsIP[i] + " | " + lastIP[i] + " | " + IPBrodcast[i] + " |");
+            if(arrMask[i] >= 10){
+                System.out.println("| " + fiveIT(i+1) + " | /" + arrMask[i] + "  | " + IPAdress[i] + " | " + firsIP[i] + " | " + lastIP[i] + " | " + IPBrodcast[i] + " |");
+            }else{
+                System.out.println("| " + fiveIT(i+1) + " | /" + arrMask[i] + "   | " + IPAdress[i] + " | " + firsIP[i] + " | " + lastIP[i] + " | " + IPBrodcast[i] + " |");
+            }
             System.out.println("|       |      |                 |                 |                 |                 |");
         }
         System.out.println("|_______|______|_________________|_________________|_________________|_________________|");
