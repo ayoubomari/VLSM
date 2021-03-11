@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="VLSM:jar">
+    <output-path>$PROJECT_DIR$/VLSM_jar</output-path>
+    <root id="archive" name="VLSM.jar">
+      <element id="module-output" name="VLSM" />
+    </root>
+  </artifact>
+</component>
