@@ -1,0 +1,2 @@
+1) Go to the termina.
+2) "file path"> java -jar VLSM.jar
