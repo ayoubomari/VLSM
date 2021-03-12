@@ -15,13 +15,13 @@ public class Network {
     public static void remplir() {//Network information
         System.out.println("\n\n\n");
         System.out.println("Press enter to return.");
-        System.out.print("Enter your network adress like (192,168,10,0): ");
+        System.out.print("Enter your network adress like (192.168.10.0): ");
         networkInfo = scanner.nextLine();
         if (networkInfo.isEmpty()) {
             System.out.println("==================================================\n\n\n\n");
             Main.globalControler();
         } else {
-            String[] bytes = networkInfo.split(",", 4);
+            String[] bytes = networkInfo.split("\\.", 4);
             if (bytes.length == 4) {
                 int byte0 = Integer.parseInt(bytes[0]);
                 int byte1 = Integer.parseInt(bytes[1]);
