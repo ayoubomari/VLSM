@@ -50,6 +50,7 @@ public class Network {
                     } else {
                         System.out.println("Incorect input!");
                     }
+
                 }else{
                     System.out.println("Incorect input!");
                     Network.remplir();
@@ -584,6 +585,7 @@ public class Network {
         }
         return s;
     }
+
 
 }
 
